@@ -12,10 +12,10 @@ warnings.filterwarnings("ignore")
 logging.basicConfig(level=logging.CRITICAL)
 
 os.environ["CUDA_VISIBLE_DEVICES"] = "0"
-ckpt_path=r"models/multiFuseclass_04-26-10-32.pth"
-for dataset_name in ["TNO"]:
+ckpt_path=r"models/MKDFusionv1.pth"
+for dataset_name in ["MSRS"]:
     print("\n"*2+"="*80)
-    model_name="multiFuseclass_04-26-10-32.pth"
+    model_name="MKDFusionv1.pth"
     print("The test result of "+dataset_name+' :')
     test_folder=os.path.join('test_img',dataset_name)
     test_out_folder=os.path.join('test_result',dataset_name)
@@ -28,8 +28,8 @@ for dataset_name in ["TNO"]:
     multihead = nn.DataParallel(multihead()).to(device)
     multihead2 = nn.DataParallel(multihead2()).to(device)
 
-    VMamba_Encoder.load_state_dict(torch.load(ckpt_path)['DIDF_Encoder'])
-    VMamba_Decoder.load_state_dict(torch.load(ckpt_path)['DIDF_Decoder'])
+    VMamba_Encoder.load_state_dict(torch.load(ckpt_path)['VMamba_Encoder'])
+    VMamba_Decoder.load_state_dict(torch.load(ckpt_path)['VMamba_Decoder'])
     BaseFeatureExtraction.load_state_dict(torch.load(ckpt_path)['BaseFuseLayer'])
     DetailFuseLayer.load_state_dict(torch.load(ckpt_path)['DetailFuseLayer'])
     multihead.load_state_dict(torch.load(ckpt_path)['multihead'])
@@ -47,6 +47,9 @@ for dataset_name in ["TNO"]:
 
             data_IR=image_read_cv2(os.path.join(test_folder,"ir",img_name),mode='GRAY')[np.newaxis,np.newaxis, ...]/255.0
             data_VIS = image_read_cv2(os.path.join(test_folder,"vi",img_name), mode='GRAY')[np.newaxis,np.newaxis, ...]/255.0
+            # ycrcb, uint8
+            data_VIS_BGR = cv2.imread(os.path.join(test_folder, "vi", img_name))
+            _, data_VIS_Cr, data_VIS_Cb = cv2.split(cv2.cvtColor(data_VIS_BGR, cv2.COLOR_BGR2YCrCb))
 
             data_IR,data_VIS = torch.FloatTensor(data_IR),torch.FloatTensor(data_VIS)
             data_VIS, data_IR = data_VIS.cuda(), data_IR.cuda()
@@ -61,5 +64,10 @@ for dataset_name in ["TNO"]:
 
             data_Fuse=(data_Fuse-torch.min(data_Fuse))/(torch.max(data_Fuse)-torch.min(data_Fuse))
             fi = np.squeeze((data_Fuse * 255).cpu().numpy())
-            # img_save(fi, img_name.split(sep='.')[0], test_out_folder)
-            cv2.imwrite(test_out_folder +'/'+ img_name.split(sep='.')[0]+'.png', fi)
+
+            # float32 to uint8
+            fi = fi.astype(np.uint8)
+            # concatnate
+            ycrcb_fi = np.dstack((fi, data_VIS_Cr, data_VIS_Cb))
+            rgb_fi = cv2.cvtColor(ycrcb_fi, cv2.COLOR_YCrCb2RGB)
+            img_save(rgb_fi, img_name.split(sep='.')[0], test_out_folder)
