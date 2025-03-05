@@ -19,11 +19,11 @@ torch.backends.cudnn.benchmark = True
 torch.backends.cudnn.deterministic = True
 
 try:
-    from .csm_triton import CrossScanTriton, CrossMergeTriton, CrossScanTriton1b1
-    from .csms6s import CrossScan, CrossMerge
-    from .csms6s import CrossScan_Ab_1direction, CrossMerge_Ab_1direction, CrossScan_Ab_2direction, CrossMerge_Ab_2direction
-    from .csms6s import SelectiveScanMamba, SelectiveScanCore, SelectiveScanOflex
-    from .csms6s import flops_selective_scan_fn, flops_selective_scan_ref, selective_scan_flop_jit
+    from models.csm_triton import CrossScanTriton, CrossMergeTriton, CrossScanTriton1b1
+    from models.csms6s import CrossScan, CrossMerge
+    from models.csms6s import CrossScan_Ab_1direction, CrossMerge_Ab_1direction, CrossScan_Ab_2direction, CrossMerge_Ab_2direction
+    from models.csms6s import SelectiveScanMamba, SelectiveScanCore, SelectiveScanOflex
+    from models.csms6s import flops_selective_scan_fn, flops_selective_scan_ref, selective_scan_flop_jit
 except:
     from csm_triton import CrossScanTriton, CrossMergeTriton, CrossScanTriton1b1
     from csms6s import CrossScan, CrossMerge
