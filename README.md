@@ -9,7 +9,7 @@ We have now released the v1 version of MKDFusion to the public, in which we repl
 
 Our MKDFusionv1 is implemented in ``MKDFusionv1.py``.
 
-### 🏊 Training
+### Training
 **1. Virtual Environment**
 ```
 # create virtual environment
@@ -47,7 +47,7 @@ and the trained model is available in ``'./models/'``.
 
 **1. Pretrained models**
 
-Pretrained models are available in ``'./models/MKDFusionv1.pth'``.
+Download the Pretrained models from [this link](https://pan.baidu.com/s/1eVIraSKv6Kk9xsFDSoNbYw?pwd=vevy) and place it in the folder ``'./models/'``.
 
 **2. Test images**
 
